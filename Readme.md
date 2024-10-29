@@ -1,16 +1,63 @@
 # py-cffi-callback-repro
 
-Repro code for # https://github.com/csiro-hydroinformatics/uchronia-time-series/issues/1
+Repro code for # https://github.com/csiro-hydroinformatics/uchronia-time-series/issues/1. 
 
-Status:
-
-* 2024-10-10: The issue is not reproducible on Windows server 2022, compiled with Visual Studio 17 2022. This is a surprise. The only difference I can think is the version of the C++ compiler. The faulty stack was built via ([via AzureDevops image windows-2019](https://github.com/csiro-hydroinformatics/hydro-forecast-windows-pipeline/blob/e2e19c403dc971c7135eb691827d2b892996259d/azure-pipelines.yml#L35), [Windows Server 2019 with Visual Studio 2019](https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml)).
+Will be used in an issue at python-cffi on github
 
 ## Related work
 
 This is a repro adapted from unit tests in https://github.com/csiro-hydroinformatics/pyrefcount
 
 ## Steps
+
+Starting with Windows since this is where the issue occurs.
+
+### Windows
+
+Install prerequisites
+
+* Installing msbuild tools https://visualstudio.microsoft.com/visual-cpp-build-tools/
+* cmake from https://cmake.org/download/
+* Install a python virtual environment  e.g. with windows 3.11
+
+start a VS 2022 developer command prompt from the windows start menu.
+
+```bat
+where msbuild
+set user_name=xxxyyy
+cd C:\Users\%user_name%\
+: a virtual environment with python 3.11.9 and at least cffi; see annex section
+.\.venv\hydrofc\Scripts\activate
+
+cd c:\src\py-cffi-callback-repro\test_native_library\
+:: rm -rf CMakeFiles/ Makefile CMakeCache.txt cmake_install.cmake
+cmake -DCMAKE_BUILD_TYPE=DEBUG -Bbuild . -G"Visual Studio 17 2022" -DBUILD_SHARED_LIBS:BOOL=ON 
+cmake --build build
+```
+
+```bat
+cd c:\src\py-cffi-callback-repro
+python ./native_handle.py 
+```
+
+if you have in the environment `cffi==1.17.1`, a crash occurs; last std output is:
+
+```text
+before registration
+after registration
+<crashes>
+```
+
+With  `pip install cffi==1.16` however:
+
+`python ./native_handle.py`:
+
+```text
+before registration
+after registration
+after triggering callback
+b'Hello from the C library!'
+```
 
 ### Linux
 
@@ -26,51 +73,6 @@ cmake --build build
 ```sh
 cd $HOME/src/py-cffi-callback-repro
 python ./native_handle.py 
-```
-
-### Windows
-
-* Installing msbuild tools https://visualstudio.microsoft.com/visual-cpp-build-tools/
-* cmake https://cmake.org/download/
-
-starting a developer command prompt :
-
-```bat
-where msbuild
-set user_name=xxxyyy
-set user_name=per202
-cd C:\Users\%user_name%\
-: a virtual environment with python 3.11.9 and at least cffi
-.\.venv\hydrofc\Scripts\activate
-
-cd c:\src\py-cffi-callback-repro\test_native_library\
-:: rm -rf CMakeFiles/ Makefile CMakeCache.txt cmake_install.cmake
-cmake -DCMAKE_BUILD_TYPE=DEBUG -Bbuild . -G"Visual Studio 17 2022" -DBUILD_SHARED_LIBS:BOOL=ON 
-cmake --build build
-```
-
-```bat
-cd c:\src\py-cffi-callback-repro
-python ./native_handle.py 
-```
-
-with `cffi==1.17.1`, a crash occurs; last std output is:
-
-```text
-before registration
-after registration
-<crashes>
-```
-
-With  `pip install cffi==1.16`:
-
-`python ./native_handle.py`:
-
-```text
-before registration
-after registration
-after triggering callback
-b'Hello from the C library!'
 ```
 
 ## Appendix
