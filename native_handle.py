@@ -1,4 +1,3 @@
-import os
 import sys
 
 from cffi import FFI
@@ -21,14 +20,16 @@ pkg_dir = Path(".")
 
 if sys.platform == "win32":
     dir_path = pkg_dir / "test_native_library" / "build" / "Debug"
-    if not os.path.exists(os.path.join(dir_path, fname)):
-        # fallback on AppVeyor output location
-        dir_path = pkg_dir / "test_native_library" / "build" / "x64" / "Debug"
 else:
     dir_path = pkg_dir / "test_native_library" / "build"
 
+# C:\src\py-cffi-callback-repro\test_native_library\x64\Debug
+# if using the solution and vs2022
+#  dir_path = pkg_dir / "test_native_library" / "x64" / "Debug"
 native_lib_path = dir_path / fname
-assert native_lib_path.exists()
+if not native_lib_path.exists():
+    raise FileNotFoundError(native_lib_path)
+
 
 ut_ffi = FFI()
 

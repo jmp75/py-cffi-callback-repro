@@ -2,24 +2,25 @@
 //
 
 #include "test_native_library.h"
+#include "error_reporting.h"
 
-// Cheap, cheerful and self-contained registration of a callback.
-// A safer way to handle callback function registration is in 
-// https://github.com/csiro-hydroinformatics/moirai/blob/master/src/reference_handle.cpp
-typedef void(*exception_callback)(const char * str);
-exception_callback ptr_callback = nullptr;
+static moirai::error_handling::error_log error_handler;
 
 void register_exception_callback(const void* callback)
 {
-	if(ptr_callback == nullptr) // Allow the deregistration, at least for unit test purposes.
-		ptr_callback = (exception_callback)callback;
+    // diagnose https://github.com/csiro-hydroinformatics/moirai/issues/1
+    if (callback == nullptr) // Allow the deregistration, at least for unit test purposes.
+        error_handler.register_exception_callback(callback);
+    else if (!error_handler.has_callback_registered())
+        error_handler.register_exception_callback(callback);
 }
 
 void trigger_callback()
 {
-	if (ptr_callback != nullptr)
+	if (error_handler.has_callback_registered())
 	{
-		(*ptr_callback)("Hello from the C library!");
+		auto e = std::logic_error("Hello from the C library!");
+		error_handler.handle_std_exception(e);
 	}
 }
 

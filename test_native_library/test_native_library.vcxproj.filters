@@ -18,9 +18,15 @@
     <ClCompile Include="test_native_library.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="error_reporting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test_native_library.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="error_reporting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

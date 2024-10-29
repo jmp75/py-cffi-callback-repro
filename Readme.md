@@ -38,6 +38,7 @@ starting a developer command prompt :
 ```bat
 where msbuild
 set user_name=xxxyyy
+set user_name=per202
 cd C:\Users\%user_name%\
 : a virtual environment with python 3.11.9 and at least cffi
 .\.venv\hydrofc\Scripts\activate
@@ -51,6 +52,25 @@ cmake --build build
 ```bat
 cd c:\src\py-cffi-callback-repro
 python ./native_handle.py 
+```
+
+with `cffi==1.17.1`, a crash occurs; last std output is:
+
+```text
+before registration
+after registration
+<crashes>
+```
+
+With  `pip install cffi==1.16`:
+
+`python ./native_handle.py`:
+
+```text
+before registration
+after registration
+after triggering callback
+b'Hello from the C library!'
 ```
 
 ## Appendix
@@ -92,3 +112,9 @@ pip install fogss-2.4.2-py2.py3-none-any.whl
 ```py
 import uchronia #Boom
 ```
+
+### Observations
+
+setting LIBRARY_PATH to c:\local\lib and `import uchronia` from the cmd prompt, this time around I do get a prompt to debug and VStudio shows the exception:
+
+Unhandled exception at 0x00000000000AB160 in python.exe: 0xC0000005: Access violation executing location 0x00000000000AB160.
