@@ -42,6 +42,7 @@ extern "C" {
 
 	TESTLIB_API void register_exception_callback(const void* callback);
 	TESTLIB_API void trigger_callback();
+  TESTLIB_API int has_callback_registered();
 
 #ifdef __cplusplus
 }

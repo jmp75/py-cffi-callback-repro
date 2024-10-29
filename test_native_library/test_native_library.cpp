@@ -15,6 +15,13 @@ void register_exception_callback(const void* callback)
         error_handler.register_exception_callback(callback);
 }
 
+int has_callback_registered()
+{
+	if (error_handler.has_callback_registered())
+		return 1;
+	return 0;
+}
+
 void trigger_callback()
 {
 	if (error_handler.has_callback_registered())

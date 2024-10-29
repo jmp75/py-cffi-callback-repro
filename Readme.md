@@ -2,11 +2,11 @@
 
 Repro code for # https://github.com/csiro-hydroinformatics/uchronia-time-series/issues/1. 
 
-Will be used in an issue at python-cffi on github
+Will be used in an issue at python-cffi on github.
 
 ## Related work
 
-This is a repro adapted from unit tests in https://github.com/csiro-hydroinformatics/pyrefcount
+Note to self: this is a repro adapted from unit tests in https://github.com/csiro-hydroinformatics/pyrefcount
 
 ## Steps
 
@@ -37,6 +37,8 @@ cmake --build build
 
 ```bat
 cd c:\src\py-cffi-callback-repro
+REM (I always passed the RT_LAZY flag i.e. 1 , but to test other values)
+set RT_CODE=1 
 python ./native_handle.py 
 ```
 
@@ -45,16 +47,26 @@ if you have in the environment `cffi==1.17.1`, a crash occurs; last std output i
 ```text
 before registration
 after registration
+before has_callback_registered
+after has_callback_registered
+before triggering callback
 <crashes>
 ```
 
-With  `pip install cffi==1.16` however:
+It actually goes further than I observed in [moirai issue 1](https://github.com/csiro-hydroinformatics/uchronia-time-series/issues/1) which crashes at call back registration.
+
+I tried to use other flags: `set RT_CODE=0` and `set RT_CODE=2` out of curiosity but it does not work either, but this seems to not be related to the core issue.
+
+With  `pip install cffi==1.16` however (and RT_CODE=1):
 
 `python ./native_handle.py`:
 
 ```text
 before registration
 after registration
+before has_callback_registered
+after has_callback_registered
+before triggering callback
 after triggering callback
 b'Hello from the C library!'
 ```
