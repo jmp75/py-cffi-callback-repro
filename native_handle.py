@@ -38,11 +38,16 @@ ut_ffi.cdef("extern void trigger_callback();")
 ut_ffi.cdef("extern int has_callback_registered();")
 
 
+# import os
+# flags = int(os.environ.get("RT_CODE", ut_ffi.RTLD_LAZY))
+flags = ut_ffi.RTLD_LAZY
+# ut_dll = ut_ffi.dlopen(str(native_lib_path), flags)  # Lazy loading
+
 import os
 
-flags = int(os.environ.get("RT_CODE", 1))
+full_path = os.path.abspath(str(native_lib_path))
 
-ut_dll = ut_ffi.dlopen(str(native_lib_path), flags)  # Lazy loading
+ut_dll = ut_ffi.dlopen(full_path, 0)  # Lazy loading
 
 _message_from_c: str | bytes = "<none>"
 
