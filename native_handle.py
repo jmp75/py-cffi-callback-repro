@@ -43,12 +43,6 @@ ut_ffi.cdef("extern int has_callback_registered();")
 flags = ut_ffi.RTLD_LAZY
 # ut_dll = ut_ffi.dlopen(str(native_lib_path), flags)  # Lazy loading
 
-import os
-
-full_path = os.path.abspath(str(native_lib_path))
-
-ut_dll = ut_ffi.dlopen(full_path, 0)  # Lazy loading
-
 _message_from_c: str | bytes = "<none>"
 
 
